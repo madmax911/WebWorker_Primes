@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Worker example: One-core computation</title>
+    </head>
+    <body>
+        <p>The highest prime number discovered so far is: <div id="result"></div></p>
+    </body>
+
+    <script>
+        let MaximumNum = 1_000_000;
+
+        (new Worker(window.URL.createObjectURL(new Blob(["(" + ((event) =>
+        {
+            let isPrime = false;
+
+            for (let n = 2; n <= MaximumNum; n++)  // Note: MaximumNum will be replaced as text in this function!
+            {
+                isPrime = true;
+
+                for(let i = 2; i <= Math.sqrt(n); i++)
+                    if (n % i == 0)
+                        isPrime = false;
+
+                if (isPrime)
+                    postMessage(n);
+            }
+
+        }).toString().replaceAll('MaximumNum', MaximumNum) + ")()"], {type: "text/javascript"})))).onmessage = (event) =>
+        {
+            result.innerHTML = event.data;
+        }
+
+    </script>
+</html>
